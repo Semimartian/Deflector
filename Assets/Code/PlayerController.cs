@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour,IHittable
    // [SerializeField] private CapsuleCollider capsuleCollider;
     private Vector3 deflectCapsuleHalfHeight;
     private float deflectCapsuleRadius;
+  [SerializeField]  private Animator animator;
 
     private Transform myTransform;
 
@@ -50,6 +51,10 @@ public class PlayerController : MonoBehaviour,IHittable
             }
 
         }
+
+        string trigger = "Deflect";
+        trigger += Random.Range(0, 2).ToString();
+        animator.SetTrigger(trigger);
     }
 
     public void Hit()
