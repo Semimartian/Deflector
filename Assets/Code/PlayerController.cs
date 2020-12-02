@@ -8,9 +8,10 @@ public class PlayerController : MonoBehaviour,IHittable
    // [SerializeField] private CapsuleCollider capsuleCollider;
     private Vector3 deflectCapsuleHalfHeight;
     private float deflectCapsuleRadius;
-  [SerializeField]  private Animator animator;
+   [SerializeField]  private Animator animator;
 
     private Transform myTransform;
+    private Rigidbody rigidbody;
 
     private void Start()
     {
@@ -48,6 +49,9 @@ public class PlayerController : MonoBehaviour,IHittable
             if (projectile != null)
             {
                 projectile.Deflect();
+               /* rigidbody.rotation =
+                    Vector3.RotateTowards()*/
+
             }
 
         }
