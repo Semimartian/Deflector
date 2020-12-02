@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour,IHittable
     private void Start()
     {
         myTransform = transform;
+        rigidbody = GetComponent<Rigidbody>();
         overlappingColliders = new Collider[32];
 
         CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
@@ -49,8 +50,22 @@ public class PlayerController : MonoBehaviour,IHittable
             if (projectile != null)
             {
                 projectile.Deflect();
-               /* rigidbody.rotation =
-                    Vector3.RotateTowards()*/
+                //LEARN FROM THIS:
+                // rigidbody.rotation =
+                // myTransform.LookAt(projectile.transform.position);
+
+                /*  Vector3 myYlessPosition = myTransform.position;
+                  Vector3 projectileYlessPosition = projectile.transform.position;
+                  myYlessPosition.y = 0;
+                  projectileYlessPosition.y = 0;
+
+                  Quaternion rotation = Quaternion.LookRotation(projectileYlessPosition - myYlessPosition);*/
+
+                Vector3 direction = projectile.transform.position - myTransform.position;
+                direction.y = 0;
+                Quaternion rotation = Quaternion.LookRotation(direction);
+                rigidbody.rotation = rotation;
+
 
             }
 
