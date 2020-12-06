@@ -29,11 +29,17 @@ public class Projectile : MonoBehaviour
         Destroy(gameObject);
     }
 
-    internal void Deflect()
+    internal void Deflect(Vector3 lookAtPosition)
     {
         //This method is dumb
-        Vector3 lookAtPosition = (-myTransform.forward) + myTransform.position;
-        myTransform.LookAt(lookAtPosition);
+
+        /*Vector3 lookAtPosition = (-myTransform.forward) + myTransform.position;
+        myTransform.LookAt(lookAtPosition);*/
+
+        Vector3 direction = lookAtPosition - myTransform.position;
+        direction.y = 0;
+        Quaternion rotation = Quaternion.LookRotation(direction);
+        rigidbody.rotation = rotation;
     }
 
 
