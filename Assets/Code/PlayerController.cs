@@ -18,6 +18,13 @@ public class PlayerController : MonoBehaviour,IHittable
     [SerializeField] private float accelerationPerSecond;
     [SerializeField] private float deaccelerationPerSecond;
 
+    [SerializeField] private Transform mouseRayMarker;
+    [SerializeField] private Camera camera;
+    [SerializeField] private float groundY;
+
+    private int hits = 0;
+    [SerializeField] private UIText hitsText;
+
     private void Start()
     {
         myTransform = transform;
@@ -28,6 +35,8 @@ public class PlayerController : MonoBehaviour,IHittable
         deflectCapsuleHalfHeight = Vector3.up * (capsuleCollider.height / 2);
         deflectCapsuleRadius = capsuleCollider.radius;
         capsuleCollider.enabled = false;
+
+        UpdateUI();
     }
     private void Update()
     {
@@ -38,16 +47,28 @@ public class PlayerController : MonoBehaviour,IHittable
 
         if (Input.GetKeyDown(KeyCode.W))
         {
-            isRunning = true;
-            animator.SetBool("IsRunning",true);
+            StartRunning();
         }
         if (Input.GetKeyUp(KeyCode.W))
         {
-            isRunning = false;
-            animator.SetBool("IsRunning", false);
-
+            StopRunning();
         }
     }
+
+    private void StartRunning()
+    {
+        isRunning = true;
+        animator.SetBool("IsRunning", true);
+        rigidbody.rotation = Quaternion.identity;
+
+    }
+
+    private void StopRunning()
+    {
+        isRunning = false;
+        animator.SetBool("IsRunning", false);
+    }
+
 
     private void FixedUpdate()
     {
@@ -55,7 +76,6 @@ public class PlayerController : MonoBehaviour,IHittable
         if (isRunning)
         {
             currentSpeed += accelerationPerSecond * deltaTime;
-
         }
         else
         {
@@ -95,7 +115,8 @@ public class PlayerController : MonoBehaviour,IHittable
             Projectile projectile = overlappingColliders[i].GetComponentInParent<Projectile>();
             if (projectile != null)
             {
-                projectile.Deflect();
+
+
                 //LEARN FROM THIS:
                 // rigidbody.rotation =
                 // myTransform.LookAt(projectile.transform.position);
@@ -107,10 +128,15 @@ public class PlayerController : MonoBehaviour,IHittable
 
                   Quaternion rotation = Quaternion.LookRotation(projectileYlessPosition - myYlessPosition);*/
 
-                Vector3 direction = projectile.transform.position - myTransform.position;
+                Vector3 lookAtPosition = MouseToGroundPlane(Input.mousePosition);
+
+                Vector3 direction = //projectile.transform.position - myTransform.position;
+                    lookAtPosition - myTransform.position; ;
                 direction.y = 0;
                 Quaternion rotation = Quaternion.LookRotation(direction);
                 rigidbody.rotation = rotation;
+
+                projectile.Deflect(lookAtPosition);
 
 
             }
@@ -125,8 +151,26 @@ public class PlayerController : MonoBehaviour,IHittable
     public void Hit()
     {
         Debug.Log("I'M HIT!");
-
+        hits += 1;
     }
+
+    private void UpdateUI()
+    {
+        hitsText.UpdateText("HITS: " + hits.ToString());
+    }
+
+    private Vector3 MouseToGroundPlane(Vector3 mousePosition)
+    {
+        Ray ray = camera.ScreenPointToRay(mousePosition);
+        float rayLength = (ray.origin.y - groundY) / ray.direction.y;
+
+        Debug.DrawLine(ray.origin, ray.origin - (ray.direction * rayLength), Color.red);
+
+        Vector3 results = ray.origin - (ray.direction * rayLength);
+        mouseRayMarker.position = results;
+        return results;
+    }
+
     /* private void OnCollisionEnter(Collision collision)
      {
          Projectile projectile = collision.gameObject.GetComponentInParent<Projectile>();

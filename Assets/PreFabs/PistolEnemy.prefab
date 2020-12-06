@@ -542,6 +542,7 @@ MonoBehaviour:
     type: 3}
   barrelPoint: {fileID: 5965424532455028454}
   animator: {fileID: 5830534719121140084}
+  lookAtPlayer: 1
 --- !u!1 &9176638606531136196
 GameObject:
   m_ObjectHideFlags: 0

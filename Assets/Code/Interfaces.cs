@@ -6,3 +6,8 @@ public interface IHittable
 {
     void Hit();
 }
+
+public interface IExplodable
+{
+    void Explode(Vector3 explosionPosition, float explosionForce);
+}
