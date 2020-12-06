@@ -40,7 +40,7 @@ public class PlayerController : MonoBehaviour,IHittable
     }
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !isRunning)
         {
             TryDeflect();
         }
@@ -101,6 +101,19 @@ public class PlayerController : MonoBehaviour,IHittable
     private void TryDeflect()
     {
         Vector3 position = myTransform.position;
+
+
+        Vector3 lookAtPosition = MouseToGroundPlane(Input.mousePosition);
+        Vector3 direction = //projectile.transform.position - myTransform.position;
+               lookAtPosition - position; 
+        direction.y = 0;
+        Quaternion rotation = Quaternion.LookRotation(direction);
+        rigidbody.rotation = rotation;
+
+        string trigger = "Deflect";
+        trigger += Random.Range(0, 2).ToString();
+        animator.SetTrigger(trigger);
+
         Vector3 top = position + deflectCapsuleHalfHeight;
         Vector3 bottom = position - deflectCapsuleHalfHeight;
 
@@ -116,7 +129,6 @@ public class PlayerController : MonoBehaviour,IHittable
             if (projectile != null)
             {
 
-
                 //LEARN FROM THIS:
                 // rigidbody.rotation =
                 // myTransform.LookAt(projectile.transform.position);
@@ -128,13 +140,8 @@ public class PlayerController : MonoBehaviour,IHittable
 
                   Quaternion rotation = Quaternion.LookRotation(projectileYlessPosition - myYlessPosition);*/
 
-                Vector3 lookAtPosition = MouseToGroundPlane(Input.mousePosition);
 
-                Vector3 direction = //projectile.transform.position - myTransform.position;
-                    lookAtPosition - myTransform.position; ;
-                direction.y = 0;
-                Quaternion rotation = Quaternion.LookRotation(direction);
-                rigidbody.rotation = rotation;
+
 
                 projectile.Deflect(lookAtPosition);
 
@@ -143,15 +150,15 @@ public class PlayerController : MonoBehaviour,IHittable
 
         }
 
-        string trigger = "Deflect";
-        trigger += Random.Range(0, 2).ToString();
-        animator.SetTrigger(trigger);
+
     }
 
     public void Hit()
     {
         Debug.Log("I'M HIT!");
         hits += 1;
+        UpdateUI();
+
     }
 
     private void UpdateUI()
