@@ -12,6 +12,11 @@ public class PlayerController : MonoBehaviour,IHittable
 
     private Transform myTransform;
     private Rigidbody rigidbody;
+    private bool isRunning = false;
+    [SerializeField] private float maxSpeed;
+    private float currentSpeed;
+    [SerializeField] private float accelerationPerSecond;
+    [SerializeField] private float deaccelerationPerSecond;
 
     private void Start()
     {
@@ -30,8 +35,49 @@ public class PlayerController : MonoBehaviour,IHittable
         {
             TryDeflect();
         }
+
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            isRunning = true;
+            animator.SetBool("IsRunning",true);
+        }
+        if (Input.GetKeyUp(KeyCode.W))
+        {
+            isRunning = false;
+            animator.SetBool("IsRunning", false);
+
+        }
     }
-     
+
+    private void FixedUpdate()
+    {
+        float deltaTime = Time.fixedDeltaTime;
+        if (isRunning)
+        {
+            currentSpeed += accelerationPerSecond * deltaTime;
+
+        }
+        else
+        {
+            currentSpeed -= deaccelerationPerSecond * deltaTime;
+        }
+
+        if (currentSpeed < 0 )
+        {
+            currentSpeed = 0;
+        }
+        else if (currentSpeed > maxSpeed)
+        {
+            currentSpeed = maxSpeed;
+        }
+
+        if (currentSpeed != 0)
+        {
+            Vector3 newPosition = rigidbody.position +
+                 ((currentSpeed * deltaTime) * myTransform.forward);
+            rigidbody.MovePosition(newPosition);
+        }
+    }
     private void TryDeflect()
     {
         Vector3 position = myTransform.position;
@@ -89,6 +135,5 @@ public class PlayerController : MonoBehaviour,IHittable
              projectile.Hit();
          }
      }*/
-
 
 }

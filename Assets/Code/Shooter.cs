@@ -9,7 +9,7 @@ public class Shooter : MonoBehaviour, IHittable
     [SerializeField] private Animator animator;
     private bool isShooting = false;
     private bool isAlive =true;
-
+    private sbyte hp = 4;
     // Update is called once per frame
     void Update()
     {
@@ -43,7 +43,12 @@ public class Shooter : MonoBehaviour, IHittable
     {
         if (isAlive)
         {
-            Die();
+            hp -= 1;
+            if(hp <= 0)
+            {
+                Die();
+            }
+           
         }
       
     }

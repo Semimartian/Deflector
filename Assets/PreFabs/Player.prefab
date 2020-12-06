@@ -220,6 +220,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 8925389975892940104}
+  maxSpeed: 0
+  accelerationPerSecond: 0
+  deaccelerationPerSecond: 0
 --- !u!136 &2772399765631644840
 CapsuleCollider:
   m_ObjectHideFlags: 0
