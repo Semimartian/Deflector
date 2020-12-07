@@ -8,11 +8,13 @@ public class Projectile : MonoBehaviour
     [SerializeField] private float speed;
     private Rigidbody rigidbody;
     private Transform myTransform;
-    // Start is called before the first frame update
+    private float lifeTime = 0;
+
     void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
         myTransform = transform;
+        lifeTime = 0;
     }
 
     private void FixedUpdate()
@@ -22,6 +24,11 @@ public class Projectile : MonoBehaviour
         rigidbody.velocity = velocity;*/
         Vector3 movement = myTransform.forward * speed * Time.fixedDeltaTime;
         rigidbody.MovePosition(rigidbody.position + movement);
+        lifeTime += Time.fixedDeltaTime;
+        if (lifeTime > 5f)
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void Hit()

@@ -9,13 +9,20 @@ public class Shooter : MonoBehaviour, IHittable,IExplodable
     [SerializeField] private Animator animator;
     private bool isShooting = false;
     private bool isAlive =true;
-    private sbyte hp = 4;
+    //private sbyte hp = 4;
     [SerializeField] private bool lookAtPlayer;
     private Transform myTransform;
-
+    [SerializeField] private Collider collider;
+    [SerializeField] private float shootingDistanceFromPlayer;
     private void Start()
     {
         myTransform = transform;
+
+        if (GameManager.allowAutomaticShooting)
+        {
+            Invoke("ShootRoutine", Random.Range(1f, 4f));
+
+        }
     }
     // Update is called once per frame
     void Update()
@@ -31,7 +38,7 @@ public class Shooter : MonoBehaviour, IHittable,IExplodable
 
     private void FixedUpdate()
     {
-        if (lookAtPlayer)
+        if (lookAtPlayer && isAlive)
         {
             Vector3 direction = GameManager.playerPosition - myTransform.position;
             direction.y = 0;
@@ -61,8 +68,8 @@ public class Shooter : MonoBehaviour, IHittable,IExplodable
     {
         if (isAlive)
         {
-            hp -= 1;
-            if(hp <= 0)
+           /* hp -= 1;
+            if(hp <= 0)*/
             {
                 Die();
             }
@@ -81,5 +88,16 @@ public class Shooter : MonoBehaviour, IHittable,IExplodable
     {
         isAlive = false;
         animator.SetTrigger("Die");
+        collider.enabled = false;
     }
+
+    private void ShootRoutine()
+    {
+        float distanceFromPlayer = Vector3.Distance(myTransform.position, GameManager.playerPosition);
+        if (distanceFromPlayer < shootingDistanceFromPlayer)
+        {
+            TryShoot();
+        }
+        Invoke("ShootRoutine", Random.Range(1f, 4.5f));
+    } 
 }

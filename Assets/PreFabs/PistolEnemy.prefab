@@ -543,6 +543,8 @@ MonoBehaviour:
   barrelPoint: {fileID: 5965424532455028454}
   animator: {fileID: 5830534719121140084}
   lookAtPlayer: 1
+  collider: {fileID: 2766791060690976065}
+  shootingDistanceFromPlayer: 16
 --- !u!1 &9176638606531136196
 GameObject:
   m_ObjectHideFlags: 0
@@ -919,6 +921,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -0.30793518
       objectReference: {fileID: 0}
+    - target: {fileID: 5357180615640646178, guid: 5a0577d7fda304a40ba8fa299f701166,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 8d1a75d23f4965447a7bd9d7561241fc, type: 2}
     - target: {fileID: 5469068763607483742, guid: 5a0577d7fda304a40ba8fa299f701166,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
