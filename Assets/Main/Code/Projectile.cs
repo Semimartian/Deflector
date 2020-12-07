@@ -1,0 +1,81 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Projectile : MonoBehaviour
+{
+    [SerializeField] private float speed;
+    [SerializeField] private float hitForce;
+
+    private Rigidbody rigidbody;
+    private Transform myTransform;
+    private float lifeTime = 0;
+    void Start()
+    {
+        rigidbody = GetComponent<Rigidbody>();
+        myTransform = transform;
+        lifeTime = 0;
+    }
+
+    private void FixedUpdate()
+    {
+
+        /*Vector3 velocity = myTransform.forward * speed * Time.fixedDeltaTime;
+        rigidbody.velocity = velocity;*/
+        Vector3 movement = myTransform.forward * speed * Time.fixedDeltaTime;
+        rigidbody.MovePosition(rigidbody.position + movement);
+        lifeTime += Time.fixedDeltaTime;
+        if (lifeTime > 4f)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void Hit()
+    {
+        Destroy(gameObject);
+    }
+
+    internal void Deflect(Vector3 lookAtPosition)
+    {
+        //This method is dumb
+
+        /*Vector3 lookAtPosition = (-myTransform.forward) + myTransform.position;
+        myTransform.LookAt(lookAtPosition);*/
+
+        Vector3 direction = lookAtPosition - myTransform.position;
+        direction.y = 0;
+        Quaternion rotation = Quaternion.LookRotation(direction);
+        rigidbody.rotation = rotation;
+
+        lifeTime = 0;
+    }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+
+        if(lifeTime > 0.1f)//Cheap
+        {
+            bool hitSomething = false;
+            IHittable hittable = other.gameObject.GetComponentInParent<IHittable>();
+
+            if (hittable != null)
+            {
+                hittable.Hit(rigidbody.position, myTransform.forward * hitForce);
+                hitSomething = true;
+            }
+            else if (other.gameObject.layer == 0)
+            {
+                hitSomething = true;
+            }
+
+            if (hitSomething)
+            {
+                Hit();
+            }
+        }
+        
+    }
+}
