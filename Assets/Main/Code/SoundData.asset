@@ -33,6 +33,13 @@ MonoBehaviour:
     volumeModifier: 0
   - name: 3
     audioClips:
+    - clip: {fileID: 8300000, guid: 80fb0a30c86403f4a871cf3ad00cb2b8, type: 3}
+      volume: 1
+    minPitch: 0.95
+    maxPitch: 1.15
+    volumeModifier: 0
+  - name: 4
+    audioClips:
     - clip: {fileID: 8300000, guid: f52f52654b70efc45a2d340ab752bfe7, type: 3}
       volume: 1
     - clip: {fileID: 8300000, guid: 84590a9e0125ba9429acc1bfb26f6279, type: 3}
@@ -44,7 +51,7 @@ MonoBehaviour:
     minPitch: 0.95
     maxPitch: 1.05
     volumeModifier: 0
-  - name: 4
+  - name: 5
     audioClips:
     - clip: {fileID: 8300000, guid: 1b8ca317da0f112448ed232919b41d07, type: 3}
       volume: 1

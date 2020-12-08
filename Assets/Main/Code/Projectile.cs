@@ -43,9 +43,13 @@ public class Projectile : MonoBehaviour
 
         /*Vector3 lookAtPosition = (-myTransform.forward) + myTransform.position;
         myTransform.LookAt(lookAtPosition);*/
+        Vector3 myPosition = myTransform.position;
+        Vector3 direction = lookAtPosition - myPosition;
+        if (myPosition.y > lookAtPosition.y)
+        {
+            direction.y =  0 ;
 
-        Vector3 direction = lookAtPosition - myTransform.position;
-        direction.y = 0;
+        }
         Quaternion rotation = Quaternion.LookRotation(direction);
         rigidbody.rotation = rotation;
 
@@ -66,7 +70,7 @@ public class Projectile : MonoBehaviour
                 hittable.Hit(rigidbody.position, myTransform.forward * hitForce);
                 hitSomething = true;
             }
-            else if (other.gameObject.layer == 0)
+            else if (other.gameObject.layer == 0)//Hmmmmmmmm
             {
                 hitSomething = true;
             }

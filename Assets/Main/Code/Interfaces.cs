@@ -9,5 +9,5 @@ public interface IHittable
 
 public interface IExplodable
 {
-    void Explode(Vector3 explosionPosition, float explosionForce, float explosionRadius);
+    void Explode(Vector3 explosionPosition, float explosionForce, float explosionRadius, float explosionUpwardModifier);
 }

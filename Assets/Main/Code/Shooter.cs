@@ -5,6 +5,8 @@ using UnityEngine;
 public class Shooter : MonoBehaviour, IHittable,IExplodable
 {
     [SerializeField] private Projectile projectilePreFab;
+    [SerializeField] private Transform gunAnchor;
+    [SerializeField] private Rigidbody gun;
     [SerializeField] private Transform barrelPoint;
     [SerializeField] private Animator animator;
     private bool isShooting = false;
@@ -14,16 +16,18 @@ public class Shooter : MonoBehaviour, IHittable,IExplodable
     {
         get { return isAlive; }
     }
-    //private sbyte hp = 4;
     [SerializeField] private bool lookAtPlayer;
     [SerializeField] private float minShootInterval;
     [SerializeField] private float maxShootInterval;
 
     private Transform myTransform;
     [SerializeField] private Collider collider;
-    [SerializeField] private float shootingDistanceFromPlayer;
     [SerializeField] private RagdollHandler ragdollHandler;
-    [SerializeField] private Transform[] heldItems;
+
+    //private sbyte hp = 4;
+    //[SerializeField] private float shootingDistanceFromPlayer;
+    //[SerializeField] private Transform[] heldItems;
+
     private void Start()
     {
         ragdollHandler.DisableRagdoll();
@@ -34,6 +38,8 @@ public class Shooter : MonoBehaviour, IHittable,IExplodable
             Invoke("ShootRoutine", Random.Range(1f, 4f));
 
         }
+
+        gun.transform.SetParent(null);
     }
     // Update is called once per frame
     void Update()
@@ -51,10 +57,15 @@ public class Shooter : MonoBehaviour, IHittable,IExplodable
     {
         if (lookAtPlayer && isAlive)
         {
-            Vector3 direction = GameManager.playerPosition - myTransform.position;
-            direction.y = 0;
-            Quaternion rotation = Quaternion.LookRotation(direction);
-            myTransform.rotation = rotation;
+            gun.position = gunAnchor.position;
+
+            Vector3 playerPosition = GameManager.playerPosition;
+            Vector3 gunDirection = playerPosition - gun.position;
+            gun.rotation = Quaternion.LookRotation(gunDirection);
+
+            Vector3 myDirection = playerPosition - myTransform.position;
+            myDirection.y = 0;
+            myTransform.rotation = Quaternion.LookRotation(myDirection);
         }   
     }
 
@@ -72,7 +83,7 @@ public class Shooter : MonoBehaviour, IHittable,IExplodable
         Projectile projectile = Instantiate(projectilePreFab);
         Vector3 projectilePosition = barrelPoint.transform.position;
         projectile.transform.position = projectilePosition;
-        projectile.transform.rotation = transform.rotation;
+        projectile.transform.rotation = gun.rotation;
         SoundManager.PlayOneShotSoundAt(SoundNames.BlasterShot, projectilePosition);
         isShooting = false;
     }
@@ -87,16 +98,24 @@ public class Shooter : MonoBehaviour, IHittable,IExplodable
                 Die();
                 ragdollHandler.EnableRagdoll();
                 ragdollHandler.AddForceAt(hitForce, hitPosition);
+                gun.isKinematic = false;
+                gun.AddForceAtPosition(hitForce, hitPosition, ForceMode.Impulse);
+
             }
 
         }
     }
 
-    public void Explode(Vector3 explosionPosition, float explosionForce, float explosionRadius)
+    public void Explode(Vector3 explosionPosition, float explosionForce, float explosionRadius, float explosionUpwardModifier)
     {
         Die();
         ragdollHandler.EnableRagdoll();
-        ragdollHandler.AddExplosionForce(explosionForce, explosionPosition, explosionRadius);
+        ragdollHandler.AddExplosionForce(explosionForce, explosionPosition, explosionRadius, explosionUpwardModifier);
+
+        gun.isKinematic = false;
+        gun.AddExplosionForce(explosionForce, explosionPosition, explosionRadius, explosionUpwardModifier);
+
+
     }
 
 
@@ -129,12 +148,6 @@ public class Shooter : MonoBehaviour, IHittable,IExplodable
         isAwake = true;
     }
 
-    private void ReleaseHeldItems()
-    {
-        for (int i = 0; i < heldItems.Length; i++)
-        {
-            heldItems[i].SetParent(null);
-        }
-    }
+
 
 }

@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour,IHittable
 
     [SerializeField] private Transform mouseRayMarker;
     [SerializeField] private Camera camera;
-    [SerializeField] private float groundY;
+    //[SerializeField] private float groundY;
 
     private int hits = 0;
     [SerializeField] private UIText hitsText;
@@ -52,6 +52,17 @@ public class PlayerController : MonoBehaviour,IHittable
         if (Input.GetKeyUp(KeyCode.W))
         {
             StopRunning();
+        }
+
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            SoundManager.PlayOneShotSoundAt(SoundNames.Explosion, myTransform.position);
+
+        }
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            SoundManager.PlayOneShotSoundAt(SoundNames.OldExplosion, myTransform.position);
+
         }
     }
 
@@ -141,17 +152,10 @@ public class PlayerController : MonoBehaviour,IHittable
 
                   Quaternion rotation = Quaternion.LookRotation(projectileYlessPosition - myYlessPosition);*/
 
-
-
-
                 projectile.Deflect(lookAtPosition);
 
-
             }
-
         }
-
-
     }
 
 
@@ -163,6 +167,13 @@ public class PlayerController : MonoBehaviour,IHittable
     private Vector3 MouseToGroundPlane(Vector3 mousePosition)
     {
         Ray ray = camera.ScreenPointToRay(mousePosition);
+        RaycastHit raycastHit;
+        float groundY = 0;
+        if  (Physics.Raycast(ray, out raycastHit))
+        {
+            groundY = raycastHit.point.y;
+        }
+
         float rayLength = (ray.origin.y - groundY) / ray.direction.y;
 
         Debug.DrawLine(ray.origin, ray.origin - (ray.direction * rayLength), Color.red);
