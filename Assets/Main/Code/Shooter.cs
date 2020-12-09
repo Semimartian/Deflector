@@ -41,17 +41,6 @@ public class Shooter : MonoBehaviour, IHittable,IExplodable
 
         gun.transform.SetParent(null);
     }
-    // Update is called once per frame
-    void Update()
-    {
-        if (isAlive)
-        {
-            if (Input.GetMouseButtonDown(1))
-            {
-                TryShoot();
-            }
-        }
-    }
 
     private void FixedUpdate()
     {

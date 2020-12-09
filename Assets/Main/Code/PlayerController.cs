@@ -153,7 +153,7 @@ public class PlayerController : MonoBehaviour,IHittable
                   Quaternion rotation = Quaternion.LookRotation(projectileYlessPosition - myYlessPosition);*/
 
                 projectile.Deflect(lookAtPosition);
-
+                EffectsManager.PlayEffectAt(EffectNames.Deflection, projectile.transform.position);
             }
         }
     }
