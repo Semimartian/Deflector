@@ -32,6 +32,7 @@ public class Bomb : MonoBehaviour, IHittable, IExplodable
                 explodable.Explode(explosionPosition, explosionForce, explosionRadius, explosionUpwardModifier);
             }
         }
+        EffectsManager.PlayEffectAt(EffectNames.Explosion, explosionPosition);
         SoundManager.PlayOneShotSoundAt(SoundNames.Explosion, explosionPosition);
         Destroy(gameObject);
 
