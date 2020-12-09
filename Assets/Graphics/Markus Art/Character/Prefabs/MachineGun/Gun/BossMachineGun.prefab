@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 900837867000436410}
   - component: {fileID: -658555608832813864}
   m_Layer: 0
-  m_Name: Machine Gun
+  m_Name: BossMachineGun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -43,7 +43,7 @@ Animator:
   m_GameObject: {fileID: 4241039122000438441}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: d874c3929c292f84d8f5dace22c0a9f5, type: 2}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 2bacd5efeec85314aa6e428b7a712752, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -162,7 +162,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 900837867000436410}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 64.24408, y: 180, z: 180}
 --- !u!33 &7916993304273550276
 MeshFilter:
   m_ObjectHideFlags: 0
