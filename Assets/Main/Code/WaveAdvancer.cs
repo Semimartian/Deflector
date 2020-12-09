@@ -5,10 +5,11 @@ using UnityEngine;
 public class WaveAdvancer : MonoBehaviour
 {
      private BoxCollider collider;
+
     // Start is called before the first frame update
     private void Start()
     {
-     //  Destroy( GetComponent<MeshRenderer>());
+        Destroy( GetComponent<MeshRenderer>());
         collider = GetComponent<BoxCollider>();
     }
 
