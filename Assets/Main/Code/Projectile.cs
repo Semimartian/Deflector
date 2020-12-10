@@ -34,6 +34,7 @@ public class Projectile : MonoBehaviour
 
     private void Hit()
     {
+        EffectsManager.PlayEffectAt(EffectNames.BlastExplosion, transform.position);
         Destroy(gameObject);
     }
 

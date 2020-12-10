@@ -121,7 +121,7 @@ public class PlayerController : MonoBehaviour,IHittable
         rigidbody.rotation = rotation;
 
         string trigger = "Deflect";
-        trigger += Random.Range(0, 2).ToString();
+        trigger += Random.Range(0, 4).ToString();
         animator.SetTrigger(trigger);
         SoundManager.PlayOneShotSoundAt(SoundNames.LightSaberSwing, position);
 

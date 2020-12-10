@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum EffectNames : byte
 {
-    Explosion, Deflection
+    Explosion, Deflection,BlastExplosion, Coins
 }
 
 [System.Serializable]
