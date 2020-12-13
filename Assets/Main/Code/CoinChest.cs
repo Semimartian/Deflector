@@ -12,6 +12,8 @@ public class CoinChest : MonoBehaviour, IHittable
 
     private void Break()
     {
+        EffectsManager.PlayEffectAt(EffectNames.Coins, transform.position);
+        
         Destroy(gameObject);
     }
 }
