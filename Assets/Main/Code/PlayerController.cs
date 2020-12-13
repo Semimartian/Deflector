@@ -20,24 +20,35 @@ public class PlayerController : MonoBehaviour,IHittable
 
     [SerializeField] private Transform mouseRayMarker;
     [SerializeField] private Camera camera;
+    [SerializeField] private MainCamera cameraController;
+
     //[SerializeField] private float groundY;
 
-    private int hits = 0;
-    [SerializeField] private UIText hitsText;
+    //private int hits = 0;
+    private int hitPoints;
+    [SerializeField] private HitPointsUI hitPointsUI;
+   // [SerializeField] private UIText hitsText;
 
-    private void Start()
+
+    private void Awake()
     {
         myTransform = transform;
         rigidbody = GetComponent<Rigidbody>();
         overlappingColliders = new Collider[32];
-
         CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
         deflectCapsuleHalfHeight = Vector3.up * (capsuleCollider.height / 2);
         deflectCapsuleRadius = capsuleCollider.radius;
         capsuleCollider.enabled = false;
 
-        UpdateUI();
+
     }
+
+    private void Start()
+    {
+        hitPoints = 3;
+        UpdateHitPointsUI();
+    }
+
     private void Update()
     {
         if (Input.GetMouseButtonDown(0) && !isRunning)
@@ -71,13 +82,15 @@ public class PlayerController : MonoBehaviour,IHittable
         isRunning = true;
         animator.SetBool("IsRunning", true);
         rigidbody.rotation = Quaternion.identity;
-
+        cameraController.TransitionToRunningState();
     }
 
     public void StopRunning()
     {
         isRunning = false;
         animator.SetBool("IsRunning", false);
+        cameraController.TransitionToActionState();
+
     }
 
 
@@ -159,9 +172,10 @@ public class PlayerController : MonoBehaviour,IHittable
     }
 
 
-    private void UpdateUI()
+    private void UpdateHitPointsUI()
     {
-        hitsText.UpdateText("HITS: " + hits.ToString());
+        hitPointsUI.UpdateUI(hitPoints);
+       // hitsText.UpdateText("HITS: " + hits.ToString());
     }
 
     private Vector3 MouseToGroundPlane(Vector3 mousePosition)
@@ -186,8 +200,14 @@ public class PlayerController : MonoBehaviour,IHittable
     public void Hit(Vector3 hitPosition, Vector3 hitForce)
     {
         Debug.Log("I'M HIT!");
-        hits += 1;
-        UpdateUI();
+        if(hitPoints > 0)
+        {
+            hitPoints -= 1;
+            UpdateHitPointsUI();
+        }
+
+       /* hits += 1;
+        UpdateUI();*/
     }
 
     /* private void OnCollisionEnter(Collision collision)

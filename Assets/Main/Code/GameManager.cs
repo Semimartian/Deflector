@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     private static GameManager instance;
     public static bool allowAutomaticShooting =true;
     [SerializeField] private Wave[] waves;
-    private static int waveIndex = 0;
+    private static int waveIndex;
     private static bool waitingForNextWave = false;
    // Start is called before the first frame update
    void Start()
@@ -30,8 +30,9 @@ public class GameManager : MonoBehaviour
                  shooters[i].Awaken();
              }
          }*/
-        AwakeCurrentWave();
-
+        // AwakeCurrentWave();
+        waveIndex = -1;
+        CheckWaveState();
         Routine();
     }
 
@@ -49,13 +50,17 @@ public class GameManager : MonoBehaviour
 
     public static void CheckWaveState()
     {
-        Shooter[] shooters = instance. waves[waveIndex].shootersToKill;
-        for (int i = 0; i < shooters.Length; i++)
+        if(waveIndex >-1 && waveIndex < instance.waves.Length)
         {
-           if(shooters[i].IsAlive)
+            Shooter[] shooters = instance.waves[waveIndex].shootersToKill;
+            for (int i = 0; i < shooters.Length; i++)
             {
-                return;
+                if (shooters[i].IsAlive)
+                {
+                    return;
+                }
             }
+
         }
 
         waitingForNextWave = true;

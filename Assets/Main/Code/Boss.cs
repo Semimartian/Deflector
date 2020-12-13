@@ -12,11 +12,6 @@ public class Boss : MonoBehaviour, IHittable
     [SerializeField] private Transform barrelPoint;
     [SerializeField] private Transform gun;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     public void WakeUp()
     {
