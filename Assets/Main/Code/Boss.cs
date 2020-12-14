@@ -11,7 +11,8 @@ public class Boss : MonoBehaviour, IHittable
     [SerializeField] private Projectile projectilePreFab;
     [SerializeField] private Transform barrelPoint;
     [SerializeField] private Transform gun;
-
+    [SerializeField] private float shootInterval;
+    
 
     public void WakeUp()
     {
@@ -29,9 +30,9 @@ public class Boss : MonoBehaviour, IHittable
         }
     }
 
-    private void StartShooting()
+    public void StartShooting()
     {
-
+        ReleaseProjectile();
     }
 
     public void Hit(Vector3 hitPosition, Vector3 hitForce)
@@ -52,7 +53,7 @@ public class Boss : MonoBehaviour, IHittable
         }*/
     }
 
-    public void ReleaseProjectile()
+    private void ReleaseProjectile()
     {
         Debug.Log("Shoot");
         Projectile projectile = Instantiate(projectilePreFab);
@@ -60,5 +61,10 @@ public class Boss : MonoBehaviour, IHittable
         projectile.transform.position = projectilePosition;
         projectile.transform.forward = -Vector3.forward;
         SoundManager.PlayOneShotSoundAt(SoundNames.BlasterShot, projectilePosition);
+
+        //if (repeat)
+        {
+            Invoke("ReleaseProjectile", shootInterval);
+        }
     }
 }

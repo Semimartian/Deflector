@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 public enum SoundNames : byte
 {
-    BlasterShot, Deflect, Wilhelm,Explosion, OldExplosion, LightSaberSwing
+    BlasterShot, Deflect, Wilhelm,Explosion, OldExplosion,
+    LightSaberSwing,BoxBreaking, Coins,
 }
 [Serializable]
 public class CorrectedSoundClip

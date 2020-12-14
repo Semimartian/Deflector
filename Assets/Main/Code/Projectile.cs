@@ -26,7 +26,7 @@ public class Projectile : MonoBehaviour
         Vector3 movement = myTransform.forward * speed * Time.fixedDeltaTime;
         rigidbody.MovePosition(rigidbody.position + movement);
         lifeTime += Time.fixedDeltaTime;
-        if (lifeTime > 4f)
+        if (lifeTime > 3f)
         {
             Destroy(gameObject);
         }

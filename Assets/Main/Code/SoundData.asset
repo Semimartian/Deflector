@@ -28,6 +28,10 @@ MonoBehaviour:
     audioClips:
     - clip: {fileID: 8300000, guid: 771f34dd0b0f79a46ad9c6d44a7e51b9, type: 3}
       volume: 1
+    - clip: {fileID: 8300000, guid: 5c11b2c5761ab574bb9327f0f49b71f6, type: 3}
+      volume: 1
+    - clip: {fileID: 8300000, guid: ad19a3cdc0998964ea65aecdb7a5fa1c, type: 3}
+      volume: 1
     minPitch: 0.95
     maxPitch: 1.05
     volumeModifier: 0
@@ -75,6 +79,29 @@ MonoBehaviour:
       volume: 1
     minPitch: 0.95
     maxPitch: 1.05
+    volumeModifier: 0
+  - name: 6
+    audioClips:
+    - clip: {fileID: 8300000, guid: 1bc6c7d55c1c47a4e9194f9de52942f2, type: 3}
+      volume: 0.6
+    minPitch: 1
+    maxPitch: 1
+    volumeModifier: 0
+  - name: 1
+    audioClips:
+    - clip: {fileID: 8300000, guid: 2e1c69c729997b54b9650eacb3516667, type: 3}
+      volume: 1
+    - clip: {fileID: 8300000, guid: 0dfa66997104b314fbca023aca0e4ba4, type: 3}
+      volume: 1
+    minPitch: 0.94
+    maxPitch: 1.08
+    volumeModifier: 0
+  - name: 7
+    audioClips:
+    - clip: {fileID: 8300000, guid: 72e142a72314eae468434a114d360862, type: 3}
+      volume: 1
+    minPitch: 1
+    maxPitch: 1
     volumeModifier: 0
   oneShotSoundPreFab: {fileID: 7439453708357623733, guid: 6c651b72d0a12eb4e9d2f49792b50c70,
     type: 3}
