@@ -5,18 +5,27 @@ using UnityEngine;
 public class Bomb : MonoBehaviour, IHittable, IExplodable
 {
 
-    private float explosionRadius;
+    [SerializeField] private float explosionRadius;
     [SerializeField] private float explosionForce;
     [SerializeField] float explosionUpwardModifier;
     [SerializeField] protected byte hp = 1;
+    private Transform myTransform;
     // Start is called before the first frame update
     void Start()
     {
-        SphereCollider sphere = GetComponent<SphereCollider>();
-        explosionRadius = sphere.radius;
-        sphere.enabled = false;
+        DoOnStart();
+
     }
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(transform.position, explosionRadius);
+    }
+
+    protected virtual void DoOnStart()
+    {
+        myTransform = transform;
+    }
 
     private void Explode()
     {

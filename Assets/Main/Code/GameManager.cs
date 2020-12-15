@@ -7,11 +7,12 @@ public class GameManager : MonoBehaviour
     [System.Serializable]
     public struct Wave
     {
-        public Shooter[] shootersToKill;
+        public StickManEnemy[] enemiesToKill;
     }
     public static Vector3 playerPosition;
     [SerializeField] private Transform playerTransform;
     [SerializeField] private PlayerController player;
+    [SerializeField] private MainCamera cameraController;
 
     private static GameManager instance;
     public static bool allowAutomaticShooting =true;
@@ -20,7 +21,7 @@ public class GameManager : MonoBehaviour
     private static bool waitingForNextWave = false;
     [Header("BossFight")]
     [SerializeField] private Boss boss;
-    private static bool inFinalWave = false;
+    private static bool inBossFight = false;
    // Start is called before the first frame update
    void Start()
     {
@@ -48,20 +49,39 @@ public class GameManager : MonoBehaviour
 
     public static void CheckWaveState()
     {
-        if(waveIndex >-1 && waveIndex < instance.waves.Length)
+        if (inBossFight)
         {
-            Shooter[] shooters = instance.waves[waveIndex].shootersToKill;
-            for (int i = 0; i < shooters.Length; i++)
+
+        }
+        else
+        {
+            if (waveIndex > -1 && waveIndex < instance.waves.Length)
             {
-                if (shooters[i].IsAlive)
+                /* Shooter[] shooters = instance.waves[waveIndex].shootersToKill;
+                 for (int i = 0; i < shooters.Length; i++)
+                 {
+                     if (shooters[i].IsAlive)
+                     {
+                         return;
+                     }
+                 }*/
+
+                StickManEnemy[] enemies = instance.waves[waveIndex].enemiesToKill;
+                for (int i = 0; i < enemies.Length; i++)
                 {
-                    return;
+                    if (enemies[i].IsAlive)
+                    {
+                        return;
+                    }
                 }
             }
+
+            waitingForNextWave = true;
+            instance.player.StartRunning();
+            instance.cameraController.TransitionTo(CameraStates.Running);
+
         }
 
-        waitingForNextWave = true;
-        instance.player.StartRunning();
     }
 
     public static void StartNextWave(bool bossTrigger)
@@ -72,16 +92,29 @@ public class GameManager : MonoBehaviour
         AwakeCurrentWave();
         if (bossTrigger)
         {
+            inBossFight = true;
             instance.StartCoroutine(instance.PlayBossScene());
+            instance.cameraController.TransitionTo(CameraStates.Boss);
+
+        }
+        else
+        {
+            instance.cameraController.TransitionTo(CameraStates.Action);
         }
     }
 
     private static void AwakeCurrentWave()
     {
-        Shooter[] shooters = instance.waves[waveIndex].shootersToKill;
+        /*Shooter[] shooters = instance.waves[waveIndex].shootersToKill;
         for (int i = 0; i < shooters.Length; i++)
         {
             shooters[i].Awaken();
+        }*/
+
+        StickManEnemy[] enemies = instance.waves[waveIndex].enemiesToKill;
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            enemies[i].Awaken();
         }
     }
 

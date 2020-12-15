@@ -20,7 +20,6 @@ public class PlayerController : MonoBehaviour,IHittable
 
     [SerializeField] private Transform mouseRayMarker;
     [SerializeField] private Camera camera;
-    [SerializeField] private MainCamera cameraController;
 
     //[SerializeField] private float groundY;
 
@@ -86,14 +85,14 @@ public class PlayerController : MonoBehaviour,IHittable
         isRunning = true;
         animator.SetBool("IsRunning", true);
         rigidbody.rotation = Quaternion.identity;
-        cameraController.TransitionToRunningState();
+       // cameraController.TransitionTo(CameraStates.Running);
     }
 
     public void StopRunning()
     {
         isRunning = false;
         animator.SetBool("IsRunning", false);
-        cameraController.TransitionToActionState();
+      //  cameraController.TransitionTo(CameraStates.Action);
     }
 
 
