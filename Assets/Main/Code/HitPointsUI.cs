@@ -9,7 +9,9 @@ public class HitPointsUI : MonoBehaviour
 
     public void UpdateUI(int hp)
     {
-        if(hp > hearts.Length)
+        //Debug.Log("UpdateUI");
+
+        if (hp > hearts.Length)
         {
             Debug.LogWarning("hp > hearts.Length");
         }

@@ -5,7 +5,9 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    [SerializeField] private float speed;
+    [SerializeField] private float speedAtSpawn;
+    [SerializeField] private float speedAtDeflect;
+    private float speed;
     [SerializeField] private float hitForce;
 
     private Rigidbody rigidbody;
@@ -16,6 +18,7 @@ public class Projectile : MonoBehaviour
         rigidbody = GetComponent<Rigidbody>();
         myTransform = transform;
         lifeTime = 0;
+        speed = speedAtSpawn;
     }
 
     private void FixedUpdate()
@@ -54,6 +57,7 @@ public class Projectile : MonoBehaviour
         Quaternion rotation = Quaternion.LookRotation(direction);
         rigidbody.rotation = rotation;
 
+        speed = speedAtDeflect;
         lifeTime = 0;
     }
 

@@ -18,6 +18,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Wave[] waves;
     private static int waveIndex;
     private static bool waitingForNextWave = false;
+    [Header("BossFight")]
+    [SerializeField] private Boss boss;
+    private static bool inFinalWave = false;
    // Start is called before the first frame update
    void Start()
     {
@@ -34,11 +37,6 @@ public class GameManager : MonoBehaviour
         waveIndex = -1;
         CheckWaveState();
         Routine();
-    }
-
-    private void FixedUpdate()
-    {
-       // Routine();
     }
 
     private void Routine()
@@ -60,20 +58,22 @@ public class GameManager : MonoBehaviour
                     return;
                 }
             }
-
         }
 
         waitingForNextWave = true;
         instance.player.StartRunning();
     }
 
-    public static void StartNextWave()
+    public static void StartNextWave(bool bossTrigger)
     {
         Debug.Log("Next Wave!");
         waveIndex++;
         instance.player.StopRunning();
         AwakeCurrentWave();
-
+        if (bossTrigger)
+        {
+            instance.StartCoroutine(instance.PlayBossScene());
+        }
     }
 
     private static void AwakeCurrentWave()
@@ -83,5 +83,12 @@ public class GameManager : MonoBehaviour
         {
             shooters[i].Awaken();
         }
+    }
+
+    private IEnumerator PlayBossScene()
+    {
+        yield return new WaitForSeconds(1f);
+        boss.WakeUp();
+
     }
 }

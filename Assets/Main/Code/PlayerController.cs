@@ -31,8 +31,11 @@ public class PlayerController : MonoBehaviour,IHittable
     [Header("Auto Aim")]
     [SerializeField] private bool enableAutoAim;
     [SerializeField] private float autoAimRadius;
-    private Collider[] autoAimCollidersInRange; 
-
+    private Collider[] autoAimCollidersInRange;
+    [SerializeField] private Renderer[] blinkers;
+    [SerializeField] private int blinksPerHit;
+    [SerializeField] private float blinkInterval;
+    private bool isBlinking = false;
     private void Awake()
     {
         myTransform = transform;
@@ -257,13 +260,35 @@ public class PlayerController : MonoBehaviour,IHittable
     public void Hit(Vector3 hitPosition, Vector3 hitForce)
     {
         Debug.Log("I'M HIT!");
-        if(hitPoints > 0)
+
+        if (hitPoints > 0 && !isBlinking )
         {
             hitPoints -= 1;
             UpdateHitPointsUI();
         }
+        StartCoroutine(Blink());
 
-       /* hits += 1;
-        UpdateUI();*/
+        /* hits += 1;
+         UpdateUI();*/
+    }
+
+
+    private IEnumerator Blink()
+    {
+        isBlinking = true;
+        for (int i = 0; i < blinksPerHit; i++)
+        {
+            for (int j = 0; j < blinkers.Length; j++)
+            {
+                blinkers[j].enabled = false;
+            }
+            yield return new WaitForSeconds(blinkInterval);
+            for (int j = 0; j < blinkers.Length; j++)
+            {
+                blinkers[j].enabled = true;
+            }
+            yield return new WaitForSeconds(blinkInterval);
+        }
+        isBlinking = false;
     }
 }
