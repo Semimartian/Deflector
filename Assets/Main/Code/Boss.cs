@@ -11,12 +11,8 @@ public class Boss : MonoBehaviour, IHittable
     [SerializeField] private Projectile projectilePreFab;
     [SerializeField] private Transform barrelPoint;
     [SerializeField] private Transform gun;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] private float shootInterval;
+    
 
     public void WakeUp()
     {
@@ -28,15 +24,15 @@ public class Boss : MonoBehaviour, IHittable
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.W))
+        if (Input.GetKeyDown(KeyCode.B))
         {
             WakeUp();
         }
     }
 
-    private void StartShooting()
+    public void StartShooting()
     {
-
+        ReleaseProjectile();
     }
 
     public void Hit(Vector3 hitPosition, Vector3 hitForce)
@@ -57,7 +53,7 @@ public class Boss : MonoBehaviour, IHittable
         }*/
     }
 
-    public void ReleaseProjectile()
+    private void ReleaseProjectile()
     {
         Debug.Log("Shoot");
         Projectile projectile = Instantiate(projectilePreFab);
@@ -65,5 +61,10 @@ public class Boss : MonoBehaviour, IHittable
         projectile.transform.position = projectilePosition;
         projectile.transform.forward = -Vector3.forward;
         SoundManager.PlayOneShotSoundAt(SoundNames.BlasterShot, projectilePosition);
+
+        //if (repeat)
+        {
+            Invoke("ReleaseProjectile", shootInterval);
+        }
     }
 }

@@ -16,8 +16,11 @@ public class GameManager : MonoBehaviour
     private static GameManager instance;
     public static bool allowAutomaticShooting =true;
     [SerializeField] private Wave[] waves;
-    private static int waveIndex = 0;
+    private static int waveIndex;
     private static bool waitingForNextWave = false;
+    [Header("BossFight")]
+    [SerializeField] private Boss boss;
+    private static bool inFinalWave = false;
    // Start is called before the first frame update
    void Start()
     {
@@ -30,14 +33,10 @@ public class GameManager : MonoBehaviour
                  shooters[i].Awaken();
              }
          }*/
-        AwakeCurrentWave();
-
+        // AwakeCurrentWave();
+        waveIndex = -1;
+        CheckWaveState();
         Routine();
-    }
-
-    private void FixedUpdate()
-    {
-       // Routine();
     }
 
     private void Routine()
@@ -49,12 +48,15 @@ public class GameManager : MonoBehaviour
 
     public static void CheckWaveState()
     {
-        Shooter[] shooters = instance. waves[waveIndex].shootersToKill;
-        for (int i = 0; i < shooters.Length; i++)
+        if(waveIndex >-1 && waveIndex < instance.waves.Length)
         {
-           if(shooters[i].IsAlive)
+            Shooter[] shooters = instance.waves[waveIndex].shootersToKill;
+            for (int i = 0; i < shooters.Length; i++)
             {
-                return;
+                if (shooters[i].IsAlive)
+                {
+                    return;
+                }
             }
         }
 
@@ -62,13 +64,16 @@ public class GameManager : MonoBehaviour
         instance.player.StartRunning();
     }
 
-    public static void StartNextWave()
+    public static void StartNextWave(bool bossTrigger)
     {
         Debug.Log("Next Wave!");
         waveIndex++;
         instance.player.StopRunning();
         AwakeCurrentWave();
-
+        if (bossTrigger)
+        {
+            instance.StartCoroutine(instance.PlayBossScene());
+        }
     }
 
     private static void AwakeCurrentWave()
@@ -78,5 +83,12 @@ public class GameManager : MonoBehaviour
         {
             shooters[i].Awaken();
         }
+    }
+
+    private IEnumerator PlayBossScene()
+    {
+        yield return new WaitForSeconds(1f);
+        boss.WakeUp();
+
     }
 }

@@ -12,8 +12,11 @@ public class CoinChest : MonoBehaviour, IHittable
 
     private void Break()
     {
-        EffectsManager.PlayEffectAt(EffectNames.Coins, transform.position);
-        
+        Vector3 position = transform.position;
+        EffectsManager.PlayEffectAt(EffectNames.Coins, position);
+        SoundManager.PlayOneShotSoundAt(SoundNames.BoxBreaking,position);
+        SoundManager.PlayOneShotSoundAt(SoundNames.Coins, position);
+
         Destroy(gameObject);
     }
 }

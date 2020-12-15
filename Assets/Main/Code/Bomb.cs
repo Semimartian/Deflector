@@ -8,6 +8,7 @@ public class Bomb : MonoBehaviour, IHittable, IExplodable
     private float explosionRadius;
     [SerializeField] private float explosionForce;
     [SerializeField] float explosionUpwardModifier;
+    [SerializeField] protected byte hp = 1;
     // Start is called before the first frame update
     void Start()
     {
@@ -43,9 +44,14 @@ public class Bomb : MonoBehaviour, IHittable, IExplodable
         Explode();
     }
 
-    public void Hit(Vector3 hitPosition, Vector3 hitForce)
+    public virtual void Hit(Vector3 hitPosition, Vector3 hitForce)
     {
-        Explode();
+        hp--;
+        if(hp == 0)
+        {
+            Explode();
+
+        }
 
     }
 }

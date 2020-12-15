@@ -20,24 +20,40 @@ public class PlayerController : MonoBehaviour,IHittable
 
     [SerializeField] private Transform mouseRayMarker;
     [SerializeField] private Camera camera;
+    [SerializeField] private MainCamera cameraController;
+
     //[SerializeField] private float groundY;
 
-    private int hits = 0;
-    [SerializeField] private UIText hitsText;
-
-    private void Start()
+    //private int hits = 0;
+    private int hitPoints;
+    [SerializeField] private HitPointsUI hitPointsUI;
+   // [SerializeField] private UIText hitsText;
+    [Header("Auto Aim")]
+    [SerializeField] private bool enableAutoAim;
+    [SerializeField] private float autoAimRadius;
+    private Collider[] autoAimCollidersInRange;
+    [SerializeField] private Renderer[] blinkers;
+    [SerializeField] private int blinksPerHit;
+    [SerializeField] private float blinkInterval;
+    private bool isBlinking = false;
+    private void Awake()
     {
         myTransform = transform;
         rigidbody = GetComponent<Rigidbody>();
         overlappingColliders = new Collider[32];
-
+        autoAimCollidersInRange = new Collider[32];
         CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
         deflectCapsuleHalfHeight = Vector3.up * (capsuleCollider.height / 2);
         deflectCapsuleRadius = capsuleCollider.radius;
         capsuleCollider.enabled = false;
-
-        UpdateUI();
     }
+
+    private void Start()
+    {
+        hitPoints = 3;
+        UpdateHitPointsUI();
+    }
+
     private void Update()
     {
         if (Input.GetMouseButtonDown(0) && !isRunning)
@@ -62,7 +78,6 @@ public class PlayerController : MonoBehaviour,IHittable
         if (Input.GetKeyDown(KeyCode.L))
         {
             SoundManager.PlayOneShotSoundAt(SoundNames.OldExplosion, myTransform.position);
-
         }
     }
 
@@ -71,13 +86,14 @@ public class PlayerController : MonoBehaviour,IHittable
         isRunning = true;
         animator.SetBool("IsRunning", true);
         rigidbody.rotation = Quaternion.identity;
-
+        cameraController.TransitionToRunningState();
     }
 
     public void StopRunning()
     {
         isRunning = false;
         animator.SetBool("IsRunning", false);
+        cameraController.TransitionToActionState();
     }
 
 
@@ -111,11 +127,19 @@ public class PlayerController : MonoBehaviour,IHittable
     }
     private void TryDeflect()
     {
-        Vector3 position = myTransform.position;
+        Vector3 myPosition = myTransform.position;
 
-        Vector3 lookAtPosition = MouseToGroundPlane(Input.mousePosition);
-        Vector3 direction = //projectile.transform.position - myTransform.position;
-               lookAtPosition - position; 
+        Vector3? nullableLookAtPosition =
+            (enableAutoAim ? AutoAimMouseToGroundPlane(Input.mousePosition) : MouseToGroundPlane(Input.mousePosition));
+
+        Vector3 lookAtPosition = new Vector3();
+
+        if (nullableLookAtPosition != null)
+        {
+            lookAtPosition = (Vector3)nullableLookAtPosition;
+        }
+       Vector3 direction = //projectile.transform.position - myTransform.position;
+               lookAtPosition - myPosition; 
         direction.y = 0;
         Quaternion rotation = Quaternion.LookRotation(direction);
         rigidbody.rotation = rotation;
@@ -123,11 +147,10 @@ public class PlayerController : MonoBehaviour,IHittable
         string trigger = "Deflect";
         trigger += Random.Range(0, 4).ToString();
         animator.SetTrigger(trigger);
-        SoundManager.PlayOneShotSoundAt(SoundNames.LightSaberSwing, position);
+        SoundManager.PlayOneShotSoundAt(SoundNames.LightSaberSwing, myPosition);
 
-
-        Vector3 top = position + deflectCapsuleHalfHeight;
-        Vector3 bottom = position - deflectCapsuleHalfHeight;
+        Vector3 top = myPosition + deflectCapsuleHalfHeight;
+        Vector3 bottom = myPosition - deflectCapsuleHalfHeight;
 
         int colliderCount = 
             Physics.OverlapCapsuleNonAlloc(bottom, top, deflectCapsuleRadius, overlappingColliders);
@@ -140,7 +163,7 @@ public class PlayerController : MonoBehaviour,IHittable
             Projectile projectile = overlappingColliders[i].GetComponentInParent<Projectile>();
             if (projectile != null)
             {
-
+                #region LEARN FROM THIS:
                 //LEARN FROM THIS:
                 // rigidbody.rotation =
                 // myTransform.LookAt(projectile.transform.position);
@@ -151,25 +174,29 @@ public class PlayerController : MonoBehaviour,IHittable
                   projectileYlessPosition.y = 0;
 
                   Quaternion rotation = Quaternion.LookRotation(projectileYlessPosition - myYlessPosition);*/
-
+                #endregion
                 projectile.Deflect(lookAtPosition);
-                EffectsManager.PlayEffectAt(EffectNames.Deflection, projectile.transform.position);
+                Vector3 deflectionPosition = projectile.transform.position;
+                EffectsManager.PlayEffectAt(EffectNames.Deflection, deflectionPosition);
+                SoundManager.PlayOneShotSoundAt(SoundNames.Deflect, deflectionPosition);
+
             }
         }
     }
 
-
-    private void UpdateUI()
+    private void UpdateHitPointsUI()
     {
-        hitsText.UpdateText("HITS: " + hits.ToString());
+        hitPointsUI.UpdateUI(hitPoints);
+       // hitsText.UpdateText("HITS: " + hits.ToString());
     }
 
     private Vector3 MouseToGroundPlane(Vector3 mousePosition)
     {
+        //TODO: Something dumb is going on...
         Ray ray = camera.ScreenPointToRay(mousePosition);
         RaycastHit raycastHit;
         float groundY = 0;
-        if  (Physics.Raycast(ray, out raycastHit))
+        if (Physics.Raycast(ray, out raycastHit))
         {
             groundY = raycastHit.point.y;
         }
@@ -183,19 +210,85 @@ public class PlayerController : MonoBehaviour,IHittable
         return results;
     }
 
+    private Vector3? AutoAimMouseToGroundPlane(Vector3 mousePosition)
+    {
+        Ray ray = camera.ScreenPointToRay(mousePosition);
+        RaycastHit raycastHit;
+        Physics.Raycast(ray, out raycastHit);
+        IHittable hittable = raycastHit.collider.gameObject.GetComponentInParent<IHittable>();
+        if(hittable != null)
+        {
+            mouseRayMarker.position = raycastHit.point;
+            return raycastHit.point;
+        }
+        else
+        {
+            Vector3 autoAimPoint = raycastHit.point;
+            mouseRayMarker.position = autoAimPoint;
+
+            int length = Physics.OverlapSphereNonAlloc(autoAimPoint, autoAimRadius, autoAimCollidersInRange);
+            if (length >= autoAimCollidersInRange.Length)
+            {
+                Debug.LogError("NOT GOOD");
+            }
+            float shortestDistance = float.MaxValue;
+            Vector3 closestPoint = new Vector3();
+            for (int i = 0; i < length; i++)
+            {
+                if(autoAimCollidersInRange[i].GetComponentInParent<IHittable>() != null)
+                {
+                    //Debug.Log("Hittable found");
+                    Vector3 hittablePosition = autoAimCollidersInRange[i].transform.position;
+                    float squareDistance = Vector3.SqrMagnitude( hittablePosition - autoAimPoint);
+                    Debug.Log(autoAimCollidersInRange[i].name + " Distance: "+ squareDistance.ToString("f2"));
+
+                    if (squareDistance < shortestDistance)
+                    {
+                        shortestDistance = squareDistance;
+                        closestPoint = hittablePosition;
+                    }
+                }
+               
+            }
+            return closestPoint;
+        }
+       /* Debug.Log("results: " + results);
+        Debug.Log("point: " + raycastHit.point);*/
+        return null;
+    }
+
     public void Hit(Vector3 hitPosition, Vector3 hitForce)
     {
         Debug.Log("I'M HIT!");
-        hits += 1;
-        UpdateUI();
+
+        if (hitPoints > 0 && !isBlinking )
+        {
+            hitPoints -= 1;
+            UpdateHitPointsUI();
+        }
+        StartCoroutine(Blink());
+
+        /* hits += 1;
+         UpdateUI();*/
     }
 
-    /* private void OnCollisionEnter(Collision collision)
-     {
-         Projectile projectile = collision.gameObject.GetComponentInParent<Projectile>();
-         if (projectile != null)
-         {
-             projectile.Hit();
-         }
-     }*/
+
+    private IEnumerator Blink()
+    {
+        isBlinking = true;
+        for (int i = 0; i < blinksPerHit; i++)
+        {
+            for (int j = 0; j < blinkers.Length; j++)
+            {
+                blinkers[j].enabled = false;
+            }
+            yield return new WaitForSeconds(blinkInterval);
+            for (int j = 0; j < blinkers.Length; j++)
+            {
+                blinkers[j].enabled = true;
+            }
+            yield return new WaitForSeconds(blinkInterval);
+        }
+        isBlinking = false;
+    }
 }

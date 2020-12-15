@@ -5,7 +5,7 @@ using UnityEngine;
 public class WaveAdvancer : MonoBehaviour
 {
      private BoxCollider collider;
-
+    public bool bossTrigger;
     // Start is called before the first frame update
     private void Start()
     {
@@ -17,7 +17,7 @@ public class WaveAdvancer : MonoBehaviour
     {
         if (collider.bounds.Contains(GameManager.playerPosition))
         {
-            GameManager.StartNextWave();
+            GameManager.StartNextWave(bossTrigger);
             this.gameObject.SetActive(false);
         }   
     }
