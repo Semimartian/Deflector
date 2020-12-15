@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Boss : MonoBehaviour, IHittable
+public class Boss : MonoBehaviour, IExplodable
 {
     //TODO: this class looks too much like Shooter
 
@@ -12,13 +12,17 @@ public class Boss : MonoBehaviour, IHittable
     [SerializeField] private Transform barrelPoint;
     [SerializeField] private Transform gun;
     [SerializeField] private float shootInterval;
-    
+
+    private bool isAlive = true;
+
+    private Transform myTransform;
+    [SerializeField] private Collider collider;
+    [SerializeField] private RagdollHandler ragdollHandler;
 
     public void WakeUp()
     {
         myAnimator.SetBool("IsShooting", true);
         gunAnimator.SetBool("IsShooting", true);
-
     }
 
     // Update is called once per frame
@@ -47,14 +51,16 @@ public class Boss : MonoBehaviour, IHittable
                 ragdollHandler.AddForceAt(hitForce, hitPosition);
                 gun.isKinematic = false;
                 gun.AddForceAtPosition(hitForce, hitPosition, ForceMode.Impulse);
-
             }
-
         }*/
     }
 
     private void ReleaseProjectile()
     {
+        if (!isAlive)
+        {
+            return;
+        }
         Debug.Log("Shoot");
         Projectile projectile = Instantiate(projectilePreFab);
         Vector3 projectilePosition = barrelPoint.transform.position;
@@ -66,5 +72,28 @@ public class Boss : MonoBehaviour, IHittable
         {
             Invoke("ReleaseProjectile", shootInterval);
         }
+    }
+
+    private void Start()
+    {
+        ragdollHandler.DisableRagdoll();
+        myTransform = transform;
+    }
+
+    public void Explode(Vector3 explosionPosition, float explosionForce, float explosionRadius, float explosionUpwardModifier)
+    {
+        Die();
+        ragdollHandler.EnableRagdoll();
+        ragdollHandler.AddExplosionForce(explosionForce, explosionPosition, explosionRadius, explosionUpwardModifier);
+    }
+
+    private void Die()
+    {
+        isAlive = false;
+        //animator.SetTrigger("Die");
+        collider.enabled = false;
+        SoundManager.PlayOneShotSoundAt(SoundNames.Wilhelm, myTransform.position);
+
+        GameManager.CheckWaveState();
     }
 }

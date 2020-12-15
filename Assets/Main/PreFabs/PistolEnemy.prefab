@@ -490,7 +490,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 50654d4a6549b974f88b267d4856eee6, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -570,17 +570,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89ba9a6b646e9f34abcc82628237d477, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 9021953335749394469}
+  lookAtPlayer: 1
+  collider: {fileID: 2766791060690976065}
+  ragdollHandler: {fileID: 1048803898039383408}
+  heldItems:
+  - {fileID: 5507777141273874252}
   projectilePreFab: {fileID: 584773229474707179, guid: f536654a9e9191d47b7813be96c9e1b3,
     type: 3}
   gunAnchor: {fileID: 6954988439180535598}
-  gun: {fileID: 5507777141273874252}
+  gunRigidbody: {fileID: 5507777141273874252}
   barrelPoint: {fileID: 5422720945826453296}
-  animator: {fileID: 9021953335749394469}
-  lookAtPlayer: 1
   minShootInterval: 1
   maxShootInterval: 4
-  collider: {fileID: 2766791060690976065}
-  ragdollHandler: {fileID: 1048803898039383408}
 --- !u!1 &9176638606531136196
 GameObject:
   m_ObjectHideFlags: 0

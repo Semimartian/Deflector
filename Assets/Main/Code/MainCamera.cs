@@ -2,27 +2,58 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum CameraStates:byte
+{
+    Running,Action,Boss
+}
+
+[System.Serializable]
+public struct CameraStateProperties 
+{
+    public CameraStates name;
+    public Transform anchorTransform;
+}
+
+public struct CameraAnchor
+{
+    public Vector3 positionOffset;
+    public Quaternion rotation;
+    public CameraAnchor(Transform anchorTransform)
+    {
+        positionOffset = anchorTransform.localPosition;
+        rotation = anchorTransform.localRotation;
+    }
+}
+
 public class MainCamera : MonoBehaviour
 {
+
     private Transform myTransform;
     private CameraAnchor anchor;
-
+    [SerializeField] private CameraStateProperties[] cameraStates;
     [SerializeField] private Transform target;
-    [SerializeField] private Transform actionAnchorTransform;
-    [SerializeField] private Transform runningAnchorTransform;
-    private CameraAnchor actionAnchor;
-    private CameraAnchor runningAnchor;
     [SerializeField] private AnimationCurve transitionCurve;
     private bool isTransitioning = false;
 
     private void Awake()
     {
-        actionAnchor = new CameraAnchor(actionAnchorTransform);
-        runningAnchor = new CameraAnchor(runningAnchorTransform);
-
-        anchor = actionAnchor;
+        anchor = GetAnchor(CameraStates.Running);
 
         myTransform = transform;
+    }
+
+    private CameraAnchor GetAnchor(CameraStates name)
+    {
+        for (int i = 0; i < cameraStates.Length; i++)
+        {
+            if(name == cameraStates[i].name)
+            {
+                return new CameraAnchor(cameraStates[i].anchorTransform);
+            }
+        }
+
+        Debug.LogError("Could not find state!");
+        return new CameraAnchor();
     }
 
     private void FixedUpdate()
@@ -34,15 +65,9 @@ public class MainCamera : MonoBehaviour
         }
     }
 
-    public void TransitionToRunningState()
+    public void TransitionTo(CameraStates state)
     {
-        anchor = runningAnchor;
-        StartCoroutine(TransitionCoroutine());
-    }
-
-    public void TransitionToActionState()
-    {
-        anchor = actionAnchor;
+        anchor = GetAnchor(state);
         StartCoroutine(TransitionCoroutine());
     }
 
