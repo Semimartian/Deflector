@@ -7,18 +7,18 @@ public class Projectile : MonoBehaviour
 {
     [SerializeField] private float speedAtSpawn;
     [SerializeField] private float speedAtDeflect;
-    private float speed;
     [SerializeField] private float hitForce;
 
     private Rigidbody rigidbody;
     private Transform myTransform;
     private float lifeTime = 0;
+    private bool deflected = false;
+
     void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
         myTransform = transform;
         lifeTime = 0;
-        speed = speedAtSpawn;
     }
 
     private void FixedUpdate()
@@ -26,7 +26,8 @@ public class Projectile : MonoBehaviour
 
         /*Vector3 velocity = myTransform.forward * speed * Time.fixedDeltaTime;
         rigidbody.velocity = velocity;*/
-        Vector3 movement = myTransform.forward * speed * Time.fixedDeltaTime;
+        Vector3 movement =
+            myTransform.forward * (deflected ? speedAtDeflect : speedAtSpawn) * Time.fixedDeltaTime;
         rigidbody.MovePosition(rigidbody.position + movement);
         lifeTime += Time.fixedDeltaTime;
         if (lifeTime > 3f)
@@ -43,22 +44,23 @@ public class Projectile : MonoBehaviour
 
     internal void Deflect(Vector3 lookAtPosition)
     {
-        //This method is dumb
-
-        /*Vector3 lookAtPosition = (-myTransform.forward) + myTransform.position;
-        myTransform.LookAt(lookAtPosition);*/
-        Vector3 myPosition = myTransform.position;
-        Vector3 direction = lookAtPosition - myPosition;
-        if (myPosition.y > lookAtPosition.y)
+        if (!deflected)
         {
-            direction.y =  0 ;
+            //This method is dumb
+            /*Vector3 lookAtPosition = (-myTransform.forward) + myTransform.position;
+            myTransform.LookAt(lookAtPosition);*/
+            Vector3 myPosition = myTransform.position;
+            Vector3 direction = lookAtPosition - myPosition;
+            if (myPosition.y > lookAtPosition.y)
+            {
+                direction.y = 0;
+            }
+            Quaternion rotation = Quaternion.LookRotation(direction);
+            rigidbody.rotation = rotation;
 
-        }
-        Quaternion rotation = Quaternion.LookRotation(direction);
-        rigidbody.rotation = rotation;
-
-        speed = speedAtDeflect;
-        lifeTime = 0;
+            lifeTime = 0;
+            deflected = true;
+        }      
     }
 
 

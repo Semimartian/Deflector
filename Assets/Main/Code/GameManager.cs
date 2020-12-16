@@ -18,6 +18,10 @@ public class GameManager : MonoBehaviour
     public static bool allowAutomaticShooting =true;
     [SerializeField] private Wave[] waves;
     private static int waveIndex;
+    public static StickManEnemy[] GetCurrentWaveEnemies()
+    {
+        return instance.waves[waveIndex].enemiesToKill;
+    }
     private static bool waitingForNextWave = false;
     [Header("BossFight")]
     [SerializeField] private Boss boss;
@@ -35,6 +39,8 @@ public class GameManager : MonoBehaviour
              }
          }*/
         // AwakeCurrentWave();
+
+
         waveIndex = -1;
         CheckWaveState();
         Routine();
@@ -55,7 +61,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            if (waveIndex > -1 && waveIndex < instance.waves.Length)
+            if ( waveIndex > -1 && waveIndex < instance.waves.Length)
             {
                 /* Shooter[] shooters = instance.waves[waveIndex].shootersToKill;
                  for (int i = 0; i < shooters.Length; i++)
@@ -86,8 +92,15 @@ public class GameManager : MonoBehaviour
 
     public static void StartNextWave(bool bossTrigger)
     {
+
         Debug.Log("Next Wave!");
         waveIndex++;
+
+        if (!bossTrigger)
+        {
+            //return;
+        }
+
         instance.player.StopRunning();
         AwakeCurrentWave();
         if (bossTrigger)
@@ -95,7 +108,6 @@ public class GameManager : MonoBehaviour
             inBossFight = true;
             instance.StartCoroutine(instance.PlayBossScene());
             instance.cameraController.TransitionTo(CameraStates.Boss);
-
         }
         else
         {
@@ -120,8 +132,15 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator PlayBossScene()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.3f);
         boss.WakeUp();
+        yield return new WaitForSeconds(1.85f);
+        instance.player.FRENZY();
+    }
+
+    public static void OnBossDeath()
+    {
+        instance.player.EndFrenzy();
 
     }
 }

@@ -39,8 +39,8 @@ public class PlayerController : MonoBehaviour,IHittable
     {
         myTransform = transform;
         rigidbody = GetComponent<Rigidbody>();
-        overlappingColliders = new Collider[32];
-        autoAimCollidersInRange = new Collider[32];
+        overlappingColliders = new Collider[64];
+        autoAimCollidersInRange = new Collider[64];
         CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
         deflectCapsuleHalfHeight = Vector3.up * (capsuleCollider.height / 2);
         deflectCapsuleRadius = capsuleCollider.radius;
@@ -124,6 +124,7 @@ public class PlayerController : MonoBehaviour,IHittable
             rigidbody.MovePosition(newPosition);
         }
     }
+
     private void TryDeflect()
     {
         Vector3 myPosition = myTransform.position;
@@ -148,39 +149,120 @@ public class PlayerController : MonoBehaviour,IHittable
         animator.SetTrigger(trigger);
         SoundManager.PlayOneShotSoundAt(SoundNames.LightSaberSwing, myPosition);
 
-        Vector3 top = myPosition + deflectCapsuleHalfHeight;
-        Vector3 bottom = myPosition - deflectCapsuleHalfHeight;
-
-        int colliderCount = 
-            Physics.OverlapCapsuleNonAlloc(bottom, top, deflectCapsuleRadius, overlappingColliders);
-        if(colliderCount >= overlappingColliders.Length)
-        {
-            Debug.LogError("NOT GOOD");
-        }
+        int colliderCount = OverlapDeflectCapsule(ref myPosition);
         for (int i = 0; i < colliderCount; i++)
         {
             Projectile projectile = overlappingColliders[i].GetComponentInParent<Projectile>();
             if (projectile != null)
             {
-                #region LEARN FROM THIS:
-                //LEARN FROM THIS:
-                // rigidbody.rotation =
-                // myTransform.LookAt(projectile.transform.position);
-
-                /*  Vector3 myYlessPosition = myTransform.position;
-                  Vector3 projectileYlessPosition = projectile.transform.position;
-                  myYlessPosition.y = 0;
-                  projectileYlessPosition.y = 0;
-
-                  Quaternion rotation = Quaternion.LookRotation(projectileYlessPosition - myYlessPosition);*/
-                #endregion
-                projectile.Deflect(lookAtPosition);
-                Vector3 deflectionPosition = projectile.transform.position;
-                EffectsManager.PlayEffectAt(EffectNames.Deflection, deflectionPosition);
-                SoundManager.PlayOneShotSoundAt(SoundNames.Deflect, deflectionPosition);
-
+                DeflectProjectileTo(projectile, lookAtPosition);
             }
         }
+    }
+
+    private int OverlapDeflectCapsule(ref Vector3 myPosition)
+    {
+        Vector3 top = myPosition + deflectCapsuleHalfHeight;
+        Vector3 bottom = myPosition - deflectCapsuleHalfHeight;
+
+        int colliderCount =
+            Physics.OverlapCapsuleNonAlloc(bottom, top, deflectCapsuleRadius, overlappingColliders);
+        if (colliderCount >= overlappingColliders.Length)
+        {
+            Debug.LogError("NOT GOOD");
+        }
+        return colliderCount;
+    }
+
+    private void DeflectProjectileTo(Projectile projectile, Vector3 direction)
+    {
+        #region LEARN FROM THIS:
+        //LEARN FROM THIS:
+        // rigidbody.rotation =
+        // myTransform.LookAt(projectile.transform.position);
+
+        /*  Vector3 myYlessPosition = myTransform.position;
+          Vector3 projectileYlessPosition = projectile.transform.position;
+          myYlessPosition.y = 0;
+          projectileYlessPosition.y = 0;
+
+          Quaternion rotation = Quaternion.LookRotation(projectileYlessPosition - myYlessPosition);*/
+        #endregion
+        projectile.Deflect(direction);
+        Vector3 deflectionPosition = projectile.transform.position;
+        EffectsManager.PlayEffectAt(EffectNames.Deflection, deflectionPosition);
+        SoundManager.PlayOneShotSoundAt(SoundNames.Deflect, deflectionPosition);
+    }
+
+
+    public void FRENZY()
+    {
+
+        animator.SetBool("FRENZY",true);
+        StartCoroutine(AutoDeflectRoutine());
+    }
+
+    public void EndFrenzy()
+    {
+
+        animator.SetBool("FRENZY", false);
+        StopCoroutine(AutoDeflectRoutine());
+    }
+
+    private IEnumerator AutoDeflectRoutine()
+    {
+        StickManEnemy[] waveEnemies = GameManager.GetCurrentWaveEnemies();
+        while (true)
+        {
+            Vector3 myPosition = myTransform.position;
+
+            int colliderCount = OverlapDeflectCapsule(ref myPosition);
+
+            for (int i = 0; i < colliderCount; i++)
+            {
+                Projectile projectile = overlappingColliders[i].GetComponentInParent<Projectile>();
+                if (projectile != null)
+                {
+
+                    Vector3 deflectTo = myPosition + (Vector3.forward * 10);// why does it not work withoyt a multiplier..?
+                    float shortestDistance = float.MaxValue;
+                    for (int j = 0; j < waveEnemies.Length; j++)
+                    {
+                        StickManEnemy enemy = waveEnemies[j];
+                        if (enemy.IsAlive)
+                        {
+                            float squareDistance = 
+                                Vector3.SqrMagnitude(enemy.transform.position - myPosition);
+                            if(squareDistance < shortestDistance)
+                            {
+                                deflectTo = enemy.transform.position;
+                                shortestDistance = squareDistance;
+                            }
+                        }
+                    }
+
+                    /*
+                    if (deflectTo == null)
+                    {
+                        Debug.Log("deflectTo == null: " + deflectTo == null);//WHAT THE FUCK???
+
+                        deflectTo = myPosition + Vector3.forward;//Cheap...
+                    }
+                    else
+                    {
+                        Debug.Log("deflectTo == null: " + deflectTo == null);
+                        Debug.Log("deflectTo: " + (Vector3)deflectTo  );
+
+                    }*/
+
+                    //Debug.Log("deflectTo: " + (Vector3)deflectTo);
+
+                    DeflectProjectileTo(projectile, deflectTo);
+                }
+            }
+            yield return new WaitForSeconds(0.05f);
+        }
+        
     }
 
     private void UpdateHitPointsUI()
@@ -256,16 +338,21 @@ public class PlayerController : MonoBehaviour,IHittable
         return null;
     }
 
+
+    private bool IsHittable
+    {
+        get { return (!isRunning && (hitPoints > 0) && !isBlinking); }
+    }
     public void Hit(Vector3 hitPosition, Vector3 hitForce)
     {
         Debug.Log("I'M HIT!");
 
-        if (hitPoints > 0 && !isBlinking )
+        if (IsHittable)
         {
             hitPoints -= 1;
             UpdateHitPointsUI();
+            StartCoroutine(Blink());
         }
-        StartCoroutine(Blink());
 
         /* hits += 1;
          UpdateUI();*/
