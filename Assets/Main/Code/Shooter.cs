@@ -44,7 +44,7 @@ public class Shooter : StickManEnemy, IHittable,IExplodable
         }   
     }
 
-    private void TryShoot()
+    public void TryShoot()
     {
         if (!isShooting)
         {

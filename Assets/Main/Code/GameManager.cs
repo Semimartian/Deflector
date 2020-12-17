@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
     [Header("BossFight")]
     [SerializeField] private Boss boss;
     private static bool inBossFight = false;
-   // Start is called before the first frame update
+
    void Start()
     {
         instance = this;
@@ -44,6 +44,25 @@ public class GameManager : MonoBehaviour
         waveIndex = -1;
         CheckWaveState();
         Routine();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            StickManEnemy[] enemies = instance.waves[waveIndex].enemiesToKill;
+            for (int i = 0; i < enemies.Length; i++)
+            {
+                if (enemies[i] is Shooter)
+                {
+                    Shooter shooter = (Shooter)enemies[i];
+                    if (shooter.IsAlive)
+                    {
+                        shooter.TryShoot();
+                    }
+                }
+            }
+        }
     }
 
     private void Routine()
