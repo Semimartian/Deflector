@@ -104,9 +104,7 @@ public class GameManager : MonoBehaviour
             waitingForNextWave = true;
             instance.player.StartRunning();
             instance.cameraController.TransitionTo(CameraStates.Running);
-
         }
-
     }
 
     public static void StartNextWave(bool bossTrigger)
@@ -159,7 +157,14 @@ public class GameManager : MonoBehaviour
 
     public static void OnBossDeath()
     {
-        instance.player.EndFrenzy();
+        instance.StartCoroutine(instance.PlayVictoryScene());
+    }
 
+    private IEnumerator PlayVictoryScene()
+    {
+        player.EndFrenzy();
+        yield return new WaitForSeconds(1f);
+        player.DANCE();
+        cameraController.TransitionTo(CameraStates.Running);
     }
 }

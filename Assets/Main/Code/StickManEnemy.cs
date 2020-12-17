@@ -93,7 +93,9 @@ public class StickManEnemy : MonoBehaviour, IHittable,IExplodable
         isAlive = false;
         //animator.SetTrigger("Die");
         collider.enabled = false;
-        SoundManager.PlayOneShotSoundAt(SoundNames.Wilhelm, myTransform.position);
+        SoundNames soundName = (Random.Range(0, 4) > 0) ? SoundNames.Scream : SoundNames.Wilhelm;
+       // Debug.Log(soundName.ToString());
+        SoundManager.PlayOneShotSoundAt(soundName, myTransform.position);
 
         GameManager.CheckWaveState();
     }

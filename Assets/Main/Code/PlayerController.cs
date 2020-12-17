@@ -95,6 +95,10 @@ public class PlayerController : MonoBehaviour,IHittable
       //  cameraController.TransitionTo(CameraStates.Action);
     }
 
+    public void DANCE()
+    {
+        animator.SetTrigger("DANCE");
+    }
 
     private void FixedUpdate()
     {
@@ -261,8 +265,7 @@ public class PlayerController : MonoBehaviour,IHittable
                 }
             }
             yield return new WaitForSeconds(0.05f);
-        }
-        
+        }      
     }
 
     private void UpdateHitPointsUI()
@@ -343,6 +346,7 @@ public class PlayerController : MonoBehaviour,IHittable
     {
         get { return (!isRunning && (hitPoints > 0) && !isBlinking); }
     }
+
     public void Hit(Vector3 hitPosition, Vector3 hitForce)
     {
         Debug.Log("I'M HIT!");
