@@ -2,18 +2,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 public enum SoundNames : byte
 {
     BlasterShot, Deflect, Wilhelm,Explosion, OldExplosion,
-    LightSaberSwing,BoxBreaking, Coins,
+    LightSaberSwing,BoxBreaking, Coins, Scream
 }
+
 [Serializable]
 public class CorrectedSoundClip
 {
     public AudioClip clip;
     [Range(0, 1)] public float volume=1;
-
 }
+
 [Serializable]
 public class Sound
 {

@@ -28,12 +28,17 @@ MonoBehaviour:
     audioClips:
     - clip: {fileID: 8300000, guid: 771f34dd0b0f79a46ad9c6d44a7e51b9, type: 3}
       volume: 1
-    - clip: {fileID: 8300000, guid: 5c11b2c5761ab574bb9327f0f49b71f6, type: 3}
-      volume: 1
+    minPitch: 0.94
+    maxPitch: 1.06
+    volumeModifier: 0
+  - name: 8
+    audioClips:
     - clip: {fileID: 8300000, guid: ad19a3cdc0998964ea65aecdb7a5fa1c, type: 3}
-      volume: 1
-    minPitch: 0.95
-    maxPitch: 1.05
+      volume: 0.9
+    - clip: {fileID: 8300000, guid: 5c11b2c5761ab574bb9327f0f49b71f6, type: 3}
+      volume: 0.9
+    minPitch: 0.94
+    maxPitch: 1.06
     volumeModifier: 0
   - name: 3
     audioClips:
