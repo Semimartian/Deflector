@@ -28,7 +28,14 @@ public class StickManEnemy : MonoBehaviour, IHittable,IExplodable
     {
         ragdollHandler.DisableRagdoll();
         myTransform = transform;
+        Invoke("PlayIdleAnimation", Random.Range(0, 2f));
     } 
+
+    private void PlayIdleAnimation()
+    {
+        //Debug.Log("PlayIdleAnimation");
+        animator.SetTrigger("Idle");
+    }
 
     public  void Hit(Vector3 hitPosition, Vector3 hitForce)
     {
@@ -46,6 +53,11 @@ public class StickManEnemy : MonoBehaviour, IHittable,IExplodable
                     Rigidbody item = heldItems[i];
                     item.transform.SetParent(null);
                     item.isKinematic = false;
+                    Collider[] colliders = item.GetComponentsInChildren<Collider>();
+                    for (int j = 0; j < colliders.Length; j++)
+                    {
+                        colliders[j].enabled = true;
+                    }
                     item.AddForceAtPosition(hitForce, hitPosition, ForceMode.Impulse);
                 }
 
@@ -53,20 +65,27 @@ public class StickManEnemy : MonoBehaviour, IHittable,IExplodable
         }
     }
 
-    public  void Explode(Vector3 explosionPosition, float explosionForce, float explosionRadius, float explosionUpwardModifier)
+    public void Explode(Vector3 explosionPosition, float explosionForce, float explosionRadius, float explosionUpwardModifier)
     {
-        Die();
-        ragdollHandler.EnableRagdoll();
+        Debug.Log("Explode()");
+
+        if (isAlive)
+        {
+            Die();
+            ragdollHandler.EnableRagdoll();
+            for (int i = 0; i < heldItems.Length; i++)
+            {
+                Rigidbody item = heldItems[i];
+                item.transform.SetParent(null);
+                item.isKinematic = false;
+                item.AddExplosionForce
+                    (explosionForce, explosionPosition, explosionRadius, explosionUpwardModifier);
+            }
+        }
+
         ragdollHandler.AddExplosionForce(explosionForce, explosionPosition, explosionRadius, explosionUpwardModifier);
 
-        for (int i = 0; i < heldItems.Length; i++)
-        {
-            Rigidbody item = heldItems[i];
-            item.transform.SetParent(null);
-            item.isKinematic = false;
-            item.AddExplosionForce
-                (explosionForce, explosionPosition, explosionRadius, explosionUpwardModifier);
-        }
+
     }
 
     private void Die()

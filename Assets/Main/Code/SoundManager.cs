@@ -37,14 +37,14 @@ public class SoundManager : MonoBehaviour
     private static List<AudioSource> occupiedAudioSources;
     private Sound[] sounds;
     private float LookForIdleSoundsAndReturnThemInterval = 0.5f;
-    private static int poolAddition = 16;
-
+    private static int poolAddition = 32;
+    private Transform soundsParent;
     private void Start()
     {
         int sourcesCount = poolAddition;
         availableAudioSources = new List<AudioSource>(sourcesCount);
 
-        Transform soundsParent = new GameObject("Sounds").transform;
+        soundsParent = new GameObject("Sounds").transform;
 
         for (int i = 0; i < sourcesCount; i++)
         {
@@ -158,6 +158,8 @@ public class SoundManager : MonoBehaviour
             for (int i = 0; i < count; i++)
             {
                 availableAudioSources.Add(Instantiate(instance.soundData.oneShotSoundPreFab));
+                availableAudioSources[i].gameObject.SetActive(false);
+                availableAudioSources[i].gameObject.transform.SetParent(instance.soundsParent);
             }
         }
         AudioSource source = availableAudioSources[count-1];

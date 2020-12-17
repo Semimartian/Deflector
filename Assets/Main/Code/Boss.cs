@@ -18,6 +18,7 @@ public class Boss : MonoBehaviour, IExplodable
     private Transform myTransform;
     [SerializeField] private Collider collider;
     [SerializeField] private RagdollHandler ragdollHandler;
+    private bool isShooting = false;
 
     public void WakeUp()
     {
@@ -36,7 +37,11 @@ public class Boss : MonoBehaviour, IExplodable
 
     public void StartShooting()
     {
-        ReleaseProjectile();
+        if (!isShooting)
+        {
+            isShooting = true;
+            ReleaseProjectile();
+        }
     }
 
     public void Hit(Vector3 hitPosition, Vector3 hitForce)
@@ -61,7 +66,7 @@ public class Boss : MonoBehaviour, IExplodable
         {
             return;
         }
-        Debug.Log("Shoot");
+        //Debug.Log("Shoot");
         Projectile projectile = Instantiate(projectilePreFab);
         Vector3 projectilePosition = barrelPoint.transform.position;
         projectile.transform.position = projectilePosition;
@@ -82,6 +87,7 @@ public class Boss : MonoBehaviour, IExplodable
 
     public void Explode(Vector3 explosionPosition, float explosionForce, float explosionRadius, float explosionUpwardModifier)
     {
+        Debug.Log("Explode()");
         Die();
         ragdollHandler.EnableRagdoll();
         ragdollHandler.AddExplosionForce(explosionForce, explosionPosition, explosionRadius, explosionUpwardModifier);
@@ -95,5 +101,7 @@ public class Boss : MonoBehaviour, IExplodable
         SoundManager.PlayOneShotSoundAt(SoundNames.Wilhelm, myTransform.position);
 
         GameManager.CheckWaveState();
+        GameManager.OnBossDeath();
+
     }
 }

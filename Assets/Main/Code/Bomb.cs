@@ -29,18 +29,29 @@ public class Bomb : MonoBehaviour, IHittable, IExplodable
 
     private void Explode()
     {
+        Debug.Log("Bomb Exploded!");
         Vector3 explosionPosition = transform.position;
         Collider[] colliders = Physics.OverlapSphere(explosionPosition, explosionRadius);
 
-
+        List<IExplodable> explodables = new List<IExplodable>();
         for (int i = 0; i < colliders.Length; i++)
         {
             IExplodable explodable = colliders[i].gameObject.GetComponentInParent<IExplodable>();
 
             if (explodable != null && explodable != this)
             {
-                explodable.Explode(explosionPosition, explosionForce, explosionRadius, explosionUpwardModifier);
+                if (!explodables.Contains(explodable))//TODO: Optimise...
+                {
+                    explodables.Add(explodable);
+                }
             }
+        }
+
+        Debug.Log("explodables:" + explodables.Count);
+
+        for (int i = 0; i < explodables.Count; i++)
+        {
+            explodables[i].Explode(explosionPosition, explosionForce, explosionRadius, explosionUpwardModifier);
         }
         EffectsManager.PlayEffectAt(EffectNames.Explosion, explosionPosition);
         SoundManager.PlayOneShotSoundAt(SoundNames.Explosion, explosionPosition);
