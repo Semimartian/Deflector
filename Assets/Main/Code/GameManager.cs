@@ -12,12 +12,16 @@ public class GameManager : MonoBehaviour
     public static Vector3 playerPosition;
     [SerializeField] private Transform playerTransform;
     [SerializeField] private PlayerController player;
-    [SerializeField] private MainCamera cameraController;
 
     private static GameManager instance;
     public static bool allowAutomaticShooting =true;
     [SerializeField] private Wave[] waves;
     private static int waveIndex;
+    private static StickManEnemy[] CurrentWaveEnemies
+    {
+        get { return instance.waves[waveIndex].enemiesToKill; }
+    }
+
     public static StickManEnemy[] GetCurrentWaveEnemies()
     {
         return instance.waves[waveIndex].enemiesToKill;
@@ -50,7 +54,7 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.S))
         {
-            StickManEnemy[] enemies = instance.waves[waveIndex].enemiesToKill;
+            StickManEnemy[] enemies = CurrentWaveEnemies;
             for (int i = 0; i < enemies.Length; i++)
             {
                 if (enemies[i] is Shooter)
@@ -91,7 +95,7 @@ public class GameManager : MonoBehaviour
                      }
                  }*/
 
-                StickManEnemy[] enemies = instance.waves[waveIndex].enemiesToKill;
+                StickManEnemy[] enemies = CurrentWaveEnemies;
                 for (int i = 0; i < enemies.Length; i++)
                 {
                     if (enemies[i].IsAlive)
@@ -103,7 +107,7 @@ public class GameManager : MonoBehaviour
 
             waitingForNextWave = true;
             instance.player.StartRunning();
-            instance.cameraController.TransitionTo(CameraStates.Running);
+           MainCamera.instance.TransitionTo(CameraStates.Running);
         }
     }
 
@@ -124,11 +128,11 @@ public class GameManager : MonoBehaviour
         {
             inBossFight = true;
             instance.StartCoroutine(instance.PlayBossScene());
-            instance.cameraController.TransitionTo(CameraStates.Boss);
+            MainCamera.instance.TransitionTo(CameraStates.Boss);
         }
         else
         {
-            instance.cameraController.TransitionTo(CameraStates.Action);
+            MainCamera.instance.TransitionTo(CameraStates.Action);
         }
     }
 
@@ -140,7 +144,7 @@ public class GameManager : MonoBehaviour
             shooters[i].Awaken();
         }*/
 
-        StickManEnemy[] enemies = instance.waves[waveIndex].enemiesToKill;
+        StickManEnemy[] enemies = CurrentWaveEnemies;
         for (int i = 0; i < enemies.Length; i++)
         {
             enemies[i].Awaken();
@@ -160,11 +164,30 @@ public class GameManager : MonoBehaviour
         instance.StartCoroutine(instance.PlayVictoryScene());
     }
 
+    public static void OnPlayerDeath()
+    {
+        MainCamera.instance.TransitionTo(CameraStates.Running);
+
+        Wave[] waves = instance.waves;
+        for (int i = waveIndex; i < waves.Length; i++)
+        {
+            StickManEnemy[] enemies = waves[i].enemiesToKill;
+
+            for (int j = 0; j < enemies.Length; j++)
+            {
+                enemies[j].StartDancing();
+            }
+        }
+
+    }
+
     private IEnumerator PlayVictoryScene()
     {
         player.EndFrenzy();
         yield return new WaitForSeconds(1f);
         player.DANCE();
-        cameraController.TransitionTo(CameraStates.Running);
+        MainCamera.instance.TransitionTo(CameraStates.Running);
     }
+
+
 }

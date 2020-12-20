@@ -355,13 +355,25 @@ public class PlayerController : MonoBehaviour,IHittable
         {
             hitPoints -= 1;
             UpdateHitPointsUI();
-            StartCoroutine(Blink());
+            if(hitPoints == 0)
+            {
+                Die();
+            }
+            else
+            {
+                StartCoroutine(Blink());
+            }
         }
 
         /* hits += 1;
          UpdateUI();*/
     }
 
+    private void Die()
+    {
+        animator.SetTrigger("DEATH");
+        GameManager.OnPlayerDeath();
+    }
 
     private IEnumerator Blink()
     {

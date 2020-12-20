@@ -27,6 +27,7 @@ public struct CameraAnchor
 
 public class MainCamera : MonoBehaviour
 {
+    public static MainCamera instance;
 
     private Transform myTransform;
     private CameraAnchor anchor;
@@ -37,6 +38,7 @@ public class MainCamera : MonoBehaviour
 
     private void Awake()
     {
+        instance = this;
         anchor = GetAnchor(CameraStates.Running);
 
         myTransform = transform;

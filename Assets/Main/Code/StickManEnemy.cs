@@ -85,7 +85,6 @@ public class StickManEnemy : MonoBehaviour, IHittable,IExplodable
 
         ragdollHandler.AddExplosionForce(explosionForce, explosionPosition, explosionRadius, explosionUpwardModifier);
 
-
     }
 
     private void Die()
@@ -105,4 +104,9 @@ public class StickManEnemy : MonoBehaviour, IHittable,IExplodable
         isAwake = true;
     }
 
+    public void StartDancing()
+    {
+        animator.SetTrigger("Dance");
+        isAwake = false;
+    }
 }
