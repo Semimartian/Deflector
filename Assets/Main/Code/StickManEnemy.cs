@@ -28,7 +28,7 @@ public class StickManEnemy : MonoBehaviour, IHittable,IExplodable
     {
         ragdollHandler.DisableRagdoll();
         myTransform = transform;
-        Invoke("PlayIdleAnimation", Random.Range(0, 2f));
+        Invoke("PlayIdleAnimation", Random.Range(0, 1.5f));
     } 
 
     private void PlayIdleAnimation()

@@ -55,17 +55,24 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.S))
         {
             StickManEnemy[] enemies = CurrentWaveEnemies;
+            List<Shooter> livingShooters = new List<Shooter>();
+
             for (int i = 0; i < enemies.Length; i++)
             {
-                if (enemies[i] is Shooter)
+                StickManEnemy enemy = enemies[i];
+                if (enemy is Shooter && enemy.IsAlive)
                 {
-                    Shooter shooter = (Shooter)enemies[i];
+                    livingShooters.Add((Shooter)enemy);
+                   /* Shooter shooter = (Shooter)enemies[i];
                     if (shooter.IsAlive)
                     {
+                        Debug.Log("TryShoot");
                         shooter.TryShoot();
-                    }
+                    }*/
                 }
             }
+            int index = Random.Range(0, livingShooters.Count);
+            livingShooters[index].TryShoot();
         }
     }
 
@@ -116,7 +123,10 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("Next Wave!");
         waveIndex++;
-
+        while(instance.waves[waveIndex].enemiesToKill.Length == 0 )
+        {
+            waveIndex++;
+        }
         if (!bossTrigger)
         {
             //return;

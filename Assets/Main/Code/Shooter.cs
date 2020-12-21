@@ -51,6 +51,10 @@ public class Shooter : StickManEnemy, IHittable,IExplodable
             animator.SetTrigger("Shoot");
             isShooting = true;
         }
+        else
+        {
+            Debug.Log("I am shooting");
+        }
     }
 
     public void ReleaseProjectile()
